@@ -2,11 +2,15 @@ package no.nav.permitteringsvarsel.notifikasjon
 
 import no.nav.permitteringsvarsel.notifikasjon.utils.log
 import io.javalin.Javalin
+import no.nav.permitteringsvarsel.notifikasjon.kafka.PermitteringsskjemaConsumer
+import no.nav.permitteringsvarsel.notifikasjon.kafka.consumerConfig
+import org.apache.kafka.clients.consumer.Consumer
+import org.apache.kafka.clients.consumer.KafkaConsumer
 import utils.Liveness
 import java.io.Closeable
 
 // Her implementeres all businesslogikk
-class App: Closeable {
+class App (private val permitteringsConsumer: PermitteringsskjemaConsumer): Closeable {
 
     private val webServer = Javalin.create().apply {
         config.defaultContentType = "application/json"
@@ -20,6 +24,7 @@ class App: Closeable {
     fun start() {
         log.info("Starter app")
         webServer.start()
+        permitteringsConsumer.start()
     }
 
     override fun close() {
@@ -29,5 +34,7 @@ class App: Closeable {
 
 // Brukes når appen kjører på Nais
 fun main() {
-    App().start()
+    val consumer: Consumer<String, String> = KafkaConsumer<String, String>(consumerConfig())
+    val permitteringsskjemaConsumer: PermitteringsskjemaConsumer = PermitteringsskjemaConsumer(consumer)
+    App(permitteringsskjemaConsumer).start()
 }
