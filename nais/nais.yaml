@@ -9,7 +9,7 @@ spec:
   image: {{ version }}
   port: 8080
   ingresses:
-    - https://arbeidsgiver.dev.intern.nav.no/permitteringsvarsel-notifikasjon
+    - https://permitteringsvarsel-notifikasjon.dev.intern.nav.no
   liveness:
     path: /internal/isAlive
   readiness:
