@@ -6,6 +6,8 @@ class AppTest {
 
     @Test
     fun `App starter`() {
-        startLokalApp()
+        startLokalApp().use {
+
+        }
     }
 }

@@ -11,6 +11,7 @@ import org.apache.kafka.clients.consumer.Consumer
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import utils.Liveness
 import java.io.Closeable
+import kotlin.concurrent.thread
 
 // Her implementeres all businesslogikk
 class App(private val consumer: Consumer<String, String>): Closeable {
@@ -18,7 +19,7 @@ class App(private val consumer: Consumer<String, String>): Closeable {
     private val webServer = Javalin.create{ config ->
         config.defaultContentType = "application/json"
     }
-
+    private val permitteringsskjemaConsumer: PermitteringsskjemaConsumer = PermitteringsskjemaConsumer(consumer)
     fun start() {
         log.info("Starter app")
 
@@ -27,11 +28,12 @@ class App(private val consumer: Consumer<String, String>): Closeable {
             .get("/internal/isReady") { it.status(200) }
             .start()
 
-        PermitteringsskjemaConsumer(consumer).start()
+        thread { permitteringsskjemaConsumer.start() }
     }
 
     override fun close() {
-        log.info("Stopper app")
+        webServer.stop()
+        permitteringsskjemaConsumer.close()
     }
 }
 

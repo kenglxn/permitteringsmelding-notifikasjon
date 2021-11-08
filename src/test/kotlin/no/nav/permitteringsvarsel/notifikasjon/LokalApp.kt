@@ -10,7 +10,8 @@ fun main() {
 // Brukes for å kjøre appen i tester
 fun startLokalApp(
     consumer: Consumer<String, String> = mockConsumer()
-) {
-
-    App(consumer).start()
+): App {
+    val app = App(consumer)
+    app.start()
+    return app
 }
