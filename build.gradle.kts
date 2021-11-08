@@ -24,13 +24,16 @@ dependencies {
     // Use the Kotlin JDK 8 standard library.
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("com.expediagroup:graphql-kotlin-ktor-client:5.2.0")
+
     val ktor_version = "1.6.4"
     implementation("io.ktor:ktor-client-okhttp:$ktor_version")
     implementation("io.ktor:ktor-client-logging-jvm:$ktor_version")
     implementation("ch.qos.logback:logback-classic:1.2.6")
     implementation("net.logstash.logback:logstash-logback-encoder:6.6")
+
     implementation("org.apache.kafka:kafka-clients:2.7.0")
     implementation("io.confluent:kafka-avro-serializer:6.0.1")
+
     implementation("com.graphql-java:graphql-java:16.2")
     val fuelVersion = "2.3.1"
     implementation("com.github.kittinunf.fuel:fuel:$fuelVersion")

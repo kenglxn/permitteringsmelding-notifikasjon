@@ -2,9 +2,6 @@ package no.nav.permitteringsvarsel.notifikasjon
 
 import no.nav.permitteringsvarsel.notifikasjon.utils.log
 import io.javalin.Javalin
-import io.ktor.client.*
-import io.ktor.client.engine.okhttp.*
-import io.ktor.client.features.logging.*
 import no.nav.permitteringsvarsel.notifikasjon.minsideklient.MinSideNotifikasjonerService
 import no.nav.permitteringsvarsel.notifikasjon.minsideklient.getHttpClient
 import no.nav.permitteringsvarsel.notifikasjon.minsideklient.graphql.MinSideGraphQLKlient
@@ -14,10 +11,9 @@ import org.apache.kafka.clients.consumer.Consumer
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import utils.Liveness
 import java.io.Closeable
-import java.util.concurrent.TimeUnit
 
 // Her implementeres all businesslogikk
-class App (private val permitteringsConsumer: PermitteringsskjemaConsumer): Closeable {
+class App(private val consumer: Consumer<String, String>): Closeable {
 
     private val webServer = Javalin.create{ config ->
         config.defaultContentType = "application/json"
@@ -31,7 +27,7 @@ class App (private val permitteringsConsumer: PermitteringsskjemaConsumer): Clos
             .get("/internal/isReady") { it.status(200) }
             .start()
 
-        permitteringsConsumer.start()
+        PermitteringsskjemaConsumer(consumer).start()
     }
 
     override fun close() {
@@ -42,11 +38,10 @@ class App (private val permitteringsConsumer: PermitteringsskjemaConsumer): Clos
 // Brukes når appen kjører på Nais
 fun main() {
     val consumer: Consumer<String, String> = KafkaConsumer<String, String>(consumerConfig())
-    val permitteringsskjemaConsumer: PermitteringsskjemaConsumer = PermitteringsskjemaConsumer(consumer)
 
     val httpClient = getHttpClient()
     val minSideGraphQLKlient = MinSideGraphQLKlient("localhost", httpClient)
     val minSideNotifikasjonerService = MinSideNotifikasjonerService(minSideGraphQLKlient)
 
-    App(permitteringsskjemaConsumer).start()
+    App(consumer).start()
 }
