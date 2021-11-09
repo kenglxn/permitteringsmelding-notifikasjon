@@ -1,10 +1,6 @@
 package no.nav.permitteringsvarsel.notifikasjon.kafka
 
-import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientConfig
-import io.confluent.kafka.serializers.KafkaAvroDeserializer
-import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig
 import no.nav.permitteringsvarsel.notifikasjon.utils.Environment
-
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.config.SslConfigs
@@ -19,14 +15,9 @@ fun consumerConfig() = Properties().apply {
     put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false)
     put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
     put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java)
-    put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaAvroDeserializer::class.java)
+    put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java)
 
     put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, Environment.get("KAFKA_BROKERS"))
-    put(KafkaAvroDeserializerConfig.SCHEMA_REGISTRY_URL_CONFIG, Environment.get("KAFKA_SCHEMA_REGISTRY"))
-    put(KafkaAvroDeserializerConfig.USER_INFO_CONFIG, "${Environment.get("KAFKA_SCHEMA_REGISTRY_USER")}:${Environment.get("KAFKA_SCHEMA_REGISTRY_PASSWORD")}")
-    put(KafkaAvroDeserializerConfig.BASIC_AUTH_CREDENTIALS_SOURCE, "USER_INFO")
-
-    put(KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG, true)
 
     put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SSL")
     put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "")
